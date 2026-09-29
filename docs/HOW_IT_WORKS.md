@@ -108,3 +108,40 @@ Streaming lets you show output incrementally. The `delta.content` may be `None` 
 ### Experiment to Try
 
 Ask for a long story and watch it appear word by word. Compare the perceived speed vs. non-streaming.
+
+## Stage 4: Structured Output
+
+### What This Stage Does
+
+Requests JSON output, parses it, validates against a schema, and retries once if malformed.
+
+### Request Shape
+
+```python
+response = client.chat.completions.create(
+    model=MODEL,
+    messages=messages,
+    response_format={"type": "json_object"}
+)
+```
+
+The prompt must explicitly say the answer must be JSON.
+
+### Response Shape
+
+```python
+text = response.choices[0].message.content  # JSON string
+data = json.loads(text)                      # Parsed dict
+```
+
+### Key Concept: Structured Output
+
+`response_format={"type": "json_object"}` tells the model to output only JSON. But models can still produce invalid JSON or miss fields. Always validate and retry.
+
+### Key Concept: Validation and Retry
+
+Parse with `json.loads()`, then check types and required fields. On failure, send the bad output back with a correction prompt and try once more.
+
+### Experiment to Try
+
+Change the schema to require a nested object. See if the model gets it right on first try or needs the retry.
