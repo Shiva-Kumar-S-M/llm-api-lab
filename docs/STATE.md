@@ -6,10 +6,11 @@ Build a command-line assistant that teaches LLM API concepts stage by stage usin
 ## Done Stages
 - Stage 1: Basic call - src/stage1_basic.py, src/common.py
 - Stage 2: Conversation memory - src/stage2_conversation.py
+- Stage 3: Streaming - src/stage3_streaming.py
 
 ## Current Stage
-Stage 2: Conversation memory - keep a messages list, show the API is stateless, print running token count.
-Status: DONE. Next: Stage 3 - Streaming.
+Stage 3: Streaming - print tokens as they arrive.
+Status: DONE. Next: Stage 4 - Structured output.
 
 ## Key Decisions
 - Model: qwen/qwen3.8-27b (configurable via GROQ_MODEL env var)
@@ -28,4 +29,5 @@ cd /home/shivu/Downloads/llm-api-lab
 source venv/bin/activate
 python src/stage1_basic.py
 python src/stage2_conversation.py
+python src/stage3_streaming.py
 ```

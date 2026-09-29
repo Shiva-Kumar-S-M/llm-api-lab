@@ -73,3 +73,38 @@ The total tokens (input + output) must fit within the model's context window. As
 ### Experiment to Try
 
 Have a long conversation until you notice input tokens growing. Then ask "What was my first message?" - the model can answer because the full history is in the request.
+
+## Stage 3: Streaming
+
+### What This Stage Does
+
+Prints tokens as they arrive from the API instead of waiting for the full response.
+
+### Request Shape
+
+```python
+stream = client.chat.completions.create(
+    model=MODEL,
+    max_completion_tokens=200,
+    messages=[{"role": "user", "content": "Count from 1 to 10"}],
+    stream=True
+)
+for chunk in stream:
+    delta = chunk.choices[0].delta.content
+    if delta:
+        print(delta, end="", flush=True)
+```
+
+### Response Shape
+
+Each `chunk` has:
+- `chunk.choices[0].delta.content` - the new token (or None)
+- `chunk.choices[0].finish_reason` - "stop" when done
+
+### Key Concept: Streaming
+
+Streaming lets you show output incrementally. The `delta.content` may be `None` on some chunks - always check before printing. Token usage is typically only available in the final chunk or via a separate non-streaming call.
+
+### Experiment to Try
+
+Ask for a long story and watch it appear word by word. Compare the perceived speed vs. non-streaming.
