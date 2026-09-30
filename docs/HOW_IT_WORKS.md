@@ -145,3 +145,51 @@ Parse with `json.loads()`, then check types and required fields. On failure, sen
 ### Experiment to Try
 
 Change the schema to require a nested object. See if the model gets it right on first try or needs the retry.
+
+## Stage 5: Tool Use Loop
+
+### What This Stage Does
+
+Gives the model tools (read_file, list_files, calculate) and loops until the model finishes. Each loop iteration: model calls tools, tools execute, results go back to model.
+
+### Request Shape
+
+```python
+tools = [{"type": "function", "function": {"name": "read_file", "description": "...", "parameters": {...}}}]
+response = client.chat.completions.create(model=MODEL, messages=messages, tools=tools)
+```
+
+### Response Shape
+
+```python
+finish_reason = response.choices[0].finish_reason  # "tool_calls" or "stop"
+tool_calls = response.choices[0].message.tool_calls  # List of calls
+# Each call has: id, function.name, function.arguments (JSON string)
+```
+
+### Tool Result Message
+
+```python
+messages.append({"role": "tool", "tool_call_id": call.id, "content": result})
+```
+
+### Key Concept: finish_reason
+
+- `"tool_calls"` - model wants to use a tool, loop continues
+- `"stop"` - model is done, return final answer
+
+### Key Concept: role "tool" and tool_call_id
+
+Tool results must use `role: "tool"` and include the `tool_call_id` from the model's request. This links the result to the specific call.
+
+### Key Concept: Stateless API with Tools
+
+The API is still stateless. The full conversation (including tool calls and results) is sent every iteration. The loop runs in your code, not in the API.
+
+### Error Handling
+
+Catch rate limits and timeouts, retry with exponential backoff (2s, 4s, 8s). Cap the loop at 8 iterations to prevent runaway loops.
+
+### Experiment to Try
+
+Ask a question that needs multiple tool calls in sequence. Watch the loop iterate.
