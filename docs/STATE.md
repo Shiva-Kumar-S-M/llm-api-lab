@@ -8,10 +8,10 @@ Build a command-line assistant that teaches LLM API concepts stage by stage usin
 - Stage 2: Conversation memory - src/stage2_conversation.py
 - Stage 3: Streaming - src/stage3_streaming.py
 - Stage 4: Structured output - src/stage4_structured.py
+- Stage 5: Tool use loop - src/stage5_tools.py
 
 ## Current Stage
-Stage 4: Structured output - request JSON, parse it, validate it, handle malformed output with one retry.
-Status: DONE. Next: Stage 5 - Tool use loop.
+All 5 stages complete.
 
 ## Key Decisions
 - Model: qwen/qwen3.8-27b (configurable via GROQ_MODEL env var)
@@ -32,4 +32,5 @@ python src/stage1_basic.py
 python src/stage2_conversation.py
 python src/stage3_streaming.py
 python src/stage4_structured.py
+python src/stage5_tools.py
 ```
